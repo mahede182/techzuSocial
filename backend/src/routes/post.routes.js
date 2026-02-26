@@ -4,6 +4,7 @@ const { createPost, getPosts } = require("../controllers/post.controller");
 const auth = require("../middleware/auth.middleware");
 const { addComment, getComments } = require("../controllers/comment.controller");
 const { toggleLike } = require("../controllers/like.controller");
+
 router.post("/", auth, createPost);
 router.get("/", auth, getPosts);
 router.post("/:postId/like", auth, toggleLike);
