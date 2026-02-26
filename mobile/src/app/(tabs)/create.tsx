@@ -16,11 +16,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/colors';
 import { MAX_CHARS } from '@/constants/data';
+import { useAppStore } from '@/store/store';
 
 export default function CreatePostScreen() {
     const router = useRouter();
     const [text, setText] = useState('');
     const [loading, setLoading] = useState(false);
+    const createPost = useAppStore((state) => state.createPost);
     const remaining = MAX_CHARS - text.length;
     const canPost = text.trim().length > 0 && remaining >= 0;
 
@@ -28,7 +30,7 @@ export default function CreatePostScreen() {
         if (!canPost) return;
         setLoading(true);
         try {
-            // await createPost(text.trim());
+            await createPost(text.trim());
             setText('');
             Toast.show({
                 type: 'success',

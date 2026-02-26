@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
     FlatList,
     View,
@@ -11,32 +11,35 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import PostCard from '@/components/PostCard';
 import { Colors } from '@/constants/colors';
-import { Post } from '@/@types/post';
-import { MOCK_POSTS, CURRENT_USER_ID } from '@/constants/data';
+import { CURRENT_USER_ID } from '@/constants/data';
+import { useAppStore } from '@/store/store';
 
 export default function FeedScreen() {
-    const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
-    const [refreshing, setRefreshing] = useState(false);
+    const {
+        posts,
+        postsLoading,
+        postsError,
+        fetchPosts,
+        toggleLike,
+    } = useAppStore((state) => ({
+        posts: state.posts,
+        postsLoading: state.postsLoading,
+        postsError: state.postsError,
+        fetchPosts: state.fetchPosts,
+        toggleLike: state.toggleLike,
+    }));
+
+    useEffect(() => {
+        fetchPosts();
+    }, [fetchPosts]);
 
     const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => setRefreshing(false), 600);
-    }, []);
+        fetchPosts();
+    }, [fetchPosts]);
 
     const handleLike = useCallback((postId: string) => {
-        setPosts((prev) =>
-            prev.map((p) => {
-                if (p._id !== postId) return p;
-                const liked = p.likes.includes(CURRENT_USER_ID);
-                return {
-                    ...p,
-                    likes: liked
-                        ? p.likes.filter((id) => id !== CURRENT_USER_ID)
-                        : [...p.likes, CURRENT_USER_ID],
-                };
-            })
-        );
-    }, []);
+        toggleLike(postId);
+    }, [toggleLike]);
 
     const handleComment = useCallback((_postId: string) => {
         // wire up comment screen later
@@ -66,7 +69,7 @@ export default function FeedScreen() {
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
-                        refreshing={refreshing}
+                        refreshing={postsLoading}
                         onRefresh={onRefresh}
                         tintColor={Colors.primary}
                     />
