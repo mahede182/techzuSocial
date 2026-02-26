@@ -1,10 +1,8 @@
 require("dotenv").config();
 const app = require("./app");
-const mongoose = require("mongoose");
+const connectDB = require("./config/db");
 
-mongoose.connect(process.env.ATLAS_URI)
-.then(() => console.log("MongoDB connected"))
-.catch((err) => console.error("MongoDB connection error:", err));
+connectDB();
 
 const PORT = process.env.PORT || 3000;
 
