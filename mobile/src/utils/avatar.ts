@@ -14,3 +14,9 @@ export function colorForName(name: string): string {
     for (let i = 0; i < name.length; i++) hash += name.charCodeAt(i);
     return AVATAR_COLORS[hash % AVATAR_COLORS.length];
 }
+
+export function joinUrl(base: string, path: string) {
+    const b = base.replace(/\/+$/, '');
+    const p = path.replace(/^\/+/, '');
+    return `${b}/${p}`;
+  }

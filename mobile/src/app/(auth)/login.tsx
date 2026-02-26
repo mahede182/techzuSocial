@@ -6,22 +6,25 @@ import Form from '@/components/Form';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import { Colors } from '@/constants/colors';
+import { useAppStore } from '@/store/store';
 
 export default function LoginScreen() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const login = useAppStore((state) => state.login);
+    const authLoading = useAppStore((state) => state.authLoading);
+    const authError = useAppStore((state) => state.authError);
 
     const handleLogin = async () => {
         if (!email || !password) return;
-        
-        setLoading(true);
-        
-        setTimeout(() => {
-            setLoading(false);
+
+        await login({ email, password });
+
+        const { token, authError: latestError } = useAppStore.getState();
+        if (token && !latestError) {
             router.replace('/(tabs)');
-        }, 1000);
+        }
     };
 
     return (
@@ -45,11 +48,14 @@ export default function LoginScreen() {
                     placeholder="Enter your password"
                     secureTextEntry
                 />
+                {authError ? (
+                    <Text style={styles.errorText}>{authError}</Text>
+                ) : null}
                 <Button
                     title="Log in"
                     onPress={handleLogin}
-                    loading={loading}
-                    disabled={!email || !password}
+                    loading={authLoading}
+                    disabled={!email || !password || authLoading}
                 />
                 <TouchableOpacity 
                     style={styles.linkButton}
@@ -66,6 +72,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
+    },
+    errorText: {
+        color: Colors.danger,
+        marginTop: 8,
+        textAlign: 'center',
     },
     linkButton: {
         marginTop: 20,

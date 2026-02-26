@@ -6,23 +6,26 @@ import Form from '@/components/Form';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
 import { Colors } from '@/constants/colors';
+import { useAppStore } from '@/store/store';
 
 export default function RegisterScreen() {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
+    const register = useAppStore((state) => state.register);
+    const authLoading = useAppStore((state) => state.authLoading);
+    const authError = useAppStore((state) => state.authError);
 
     const handleRegister = async () => {
         if (!username || !email || !password) return;
-        
-        setLoading(true);
-        // Simulate registration process
-        setTimeout(() => {
-            setLoading(false);
-            router.replace('/(tabs)');
-        }, 1000);
+
+        await register({ email, password, name: username });
+
+        const { authError: latestError } = useAppStore.getState();
+        if (!latestError) {
+            router.replace('/(auth)/login');
+        }
     };
 
     return (
@@ -53,11 +56,14 @@ export default function RegisterScreen() {
                     placeholder="Enter your password"
                     secureTextEntry
                 />
+                {authError ? (
+                    <Text style={styles.errorText}>{authError}</Text>
+                ) : null}
                 <Button
                     title="Sign up"
                     onPress={handleRegister}
-                    loading={loading}
-                    disabled={!username || !email || !password}
+                    loading={authLoading}
+                    disabled={!username || !email || !password || authLoading}
                 />
                 <TouchableOpacity 
                     style={styles.linkButton}
@@ -74,6 +80,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
+    },
+    errorText: {
+        color: Colors.danger,
+        marginTop: 8,
+        textAlign: 'center',
     },
     linkButton: {
         marginTop: 20,
