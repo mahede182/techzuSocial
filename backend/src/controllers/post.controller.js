@@ -4,7 +4,7 @@ const createPost = async (req, res) => {
     try {
         const { text } = req.body;
 
-        const userId = req.user ? req.user.id : req.body.userId;
+        const userId = req.user.id;
 
         if (!text || !userId) {
             return res.status(400).json({ error: "Text and userId are required" });
