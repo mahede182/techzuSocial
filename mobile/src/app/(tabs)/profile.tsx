@@ -9,11 +9,11 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import Avatar from '@/components/Avatar';
 import PostCard from '@/components/PostCard';
+import ProfileListHeader from '@/components/ProfileListHeader';
 import { Colors } from '@/constants/colors';
 import { Post } from '@/@types/post';
-import { CURRENT_USER, MOCK_POSTS } from '@/constants/mockData';
+import { CURRENT_USER, MOCK_POSTS } from '@/constants/data';
 
 export default function ProfileScreen() {
     const myPosts = MOCK_POSTS.filter(p => p.userId._id === CURRENT_USER._id);
@@ -44,37 +44,8 @@ export default function ProfileScreen() {
         // wire up comment screen later
     }, []);
 
-    const totalLikes = posts.reduce((s, p) => s + p.likes.length, 0);
-    const totalComments = posts.reduce((s, p) => s + p.commentCount, 0);
-
-    const ListHeader = () => (
-        <View style={styles.profileHeader}>
-            <View style={styles.avatarRow}>
-                <Avatar name={CURRENT_USER.name} size={72} />
-                <View style={styles.statsRow}>
-                    <StatItem label="Posts" value={posts.length} />
-                    <StatItem label="Likes" value={totalLikes} />
-                    <StatItem label="Comments" value={totalComments} />
-                </View>
-            </View>
-
-            <Text style={styles.name}>{CURRENT_USER.name}</Text>
-            <Text style={styles.email}>{CURRENT_USER.email}</Text>
-
-            <TouchableOpacity style={styles.editBtn} activeOpacity={0.8}>
-                <Text style={styles.editBtnText}>Edit Profile</Text>
-            </TouchableOpacity>
-
-            <View style={styles.sectionTitle}>
-                <Ionicons name="grid-outline" size={16} color={Colors.text} />
-                <Text style={styles.sectionTitleText}>My Posts</Text>
-            </View>
-        </View>
-    );
-
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
-            {/* Header bar */}
             <View style={styles.topBar}>
                 <Text style={styles.topBarTitle}>Profile</Text>
                 <TouchableOpacity style={styles.iconBtn} activeOpacity={0.7}>
@@ -85,7 +56,7 @@ export default function ProfileScreen() {
             <FlatList
                 data={posts}
                 keyExtractor={(item) => item._id}
-                ListHeaderComponent={<ListHeader />}
+                ListHeaderComponent={<ProfileListHeader posts={posts} />}
                 renderItem={({ item }) => (
                     <PostCard
                         post={item}
@@ -114,15 +85,6 @@ export default function ProfileScreen() {
     );
 }
 
-function StatItem({ label, value }: { label: string; value: number }) {
-    return (
-        <View style={styles.statItem}>
-            <Text style={styles.statValue}>{value}</Text>
-            <Text style={styles.statLabel}>{label}</Text>
-        </View>
-    );
-}
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
@@ -144,75 +106,6 @@ const styles = StyleSheet.create({
         color: Colors.text,
     },
     iconBtn: { padding: 4 },
-    profileHeader: {
-        backgroundColor: Colors.background,
-        paddingHorizontal: 16,
-        paddingTop: 20,
-        paddingBottom: 16,
-        marginBottom: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.border,
-    },
-    avatarRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 24,
-        marginBottom: 12,
-    },
-    statsRow: {
-        flexDirection: 'row',
-        gap: 24,
-        flex: 1,
-        justifyContent: 'space-around',
-    },
-    statItem: { alignItems: 'center' },
-    statValue: {
-        fontSize: 20,
-        fontWeight: '700',
-        color: Colors.text,
-    },
-    statLabel: {
-        fontSize: 12,
-        color: Colors.textSecondary,
-        marginTop: 2,
-    },
-    name: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: Colors.text,
-    },
-    email: {
-        fontSize: 13,
-        color: Colors.textSecondary,
-        marginTop: 2,
-    },
-    editBtn: {
-        marginTop: 12,
-        borderWidth: 1,
-        borderColor: Colors.border,
-        borderRadius: 8,
-        paddingVertical: 8,
-        alignItems: 'center',
-    },
-    editBtnText: {
-        fontSize: 14,
-        fontWeight: '500',
-        color: Colors.text,
-    },
-    sectionTitle: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 6,
-        marginTop: 16,
-        paddingTop: 12,
-        borderTopWidth: 1,
-        borderTopColor: Colors.border,
-    },
-    sectionTitleText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: Colors.text,
-    },
     list: {
         paddingBottom: 120,
     },

@@ -1,7 +1,5 @@
 import React from 'react';
 import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'react-native';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 
@@ -10,16 +8,13 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-    const colorScheme = useColorScheme();
-
     return (
-        <>
-            {/* <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} /> */}
+        <React.Fragment>
             <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(auth)" />
                 <Stack.Screen name="(tabs)" />
             </Stack>
             <Toast />
-        </>
+        </React.Fragment>
     );
 }

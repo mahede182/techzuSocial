@@ -8,15 +8,8 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import Avatar from './Avatar';
 import { Colors } from '@/constants/colors';
-import { Post } from '@/@types/post';
 import { timeAgo } from '@/utils/date';
-
-interface PostCardProps {
-    post: Post;
-    currentUserId: string;
-    onLike: (postId: string) => void;
-    onComment: (postId: string) => void;
-}
+import { PostCardProps } from '@/@types/post';
 
 export default function PostCard({ post, currentUserId, onLike, onComment }: PostCardProps) {
     const liked = post.likes.includes(currentUserId);
@@ -24,7 +17,6 @@ export default function PostCard({ post, currentUserId, onLike, onComment }: Pos
 
     return (
         <View style={styles.card}>
-            {/* Header */}
             <View style={styles.header}>
                 <Avatar name={authorName} size={38} />
                 <View style={styles.headerInfo}>
@@ -33,13 +25,10 @@ export default function PostCard({ post, currentUserId, onLike, onComment }: Pos
                 </View>
             </View>
 
-            {/* Post text */}
             <Text style={styles.postText}>{post.text}</Text>
 
-            {/* Divider */}
             <View style={styles.divider} />
 
-            {/* Actions */}
             <View style={styles.actions}>
                 <TouchableOpacity style={styles.action} onPress={() => onLike(post._id)} activeOpacity={0.7}>
                     <Ionicons

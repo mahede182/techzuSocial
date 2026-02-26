@@ -1,16 +1,10 @@
 import React from 'react';
 import { Tabs, useRouter } from 'expo-router';
-import { useColorScheme, View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
-const TAB_ICONS = {
-  index: 'home',
-  create: 'add',
-  profile: 'person',
-};
+import { TAB_ICONS } from '@/constants/data';
 
 function CustomTab({ state, navigation }: any) {
-  const colorScheme = useColorScheme();
   const router = useRouter();
 
   const onPress = async (route: any) => {
