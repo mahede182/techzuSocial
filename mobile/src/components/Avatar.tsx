@@ -1,12 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-
 import { getInitials, colorForName } from '@/utils/avatar';
-
-interface AvatarProps {
-    name: string;
-    size?: number;
-}
+import { AvatarProps } from '@/@types/avatar';
 
 export default function Avatar({ name, size = 40 }: AvatarProps) {
     const bg = colorForName(name);

@@ -12,7 +12,7 @@ import { Ionicons } from '@expo/vector-icons';
 import PostCard from '@/components/PostCard';
 import { Colors } from '@/constants/colors';
 import { Post } from '@/@types/post';
-import { MOCK_POSTS, CURRENT_USER_ID } from '@/constants/mockData';
+import { MOCK_POSTS, CURRENT_USER_ID } from '@/constants/data';
 
 export default function FeedScreen() {
     const [posts, setPosts] = useState<Post[]>(MOCK_POSTS);
@@ -44,9 +44,8 @@ export default function FeedScreen() {
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
-            {/* Header */}
             <View style={styles.header}>
-                <Text style={styles.logo}>techzu</Text>
+                <Text style={styles.logo}>techzu social</Text>
                 <TouchableOpacity style={styles.iconBtn} activeOpacity={0.7}>
                     <Ionicons name="notifications-outline" size={24} color={Colors.text} />
                 </TouchableOpacity>

@@ -1,8 +1,4 @@
-export const AVATAR_COLORS = [
-    '#007AFF', '#5856D6', '#FF9500',
-    '#34C759', '#FF2D55', '#AF52DE',
-    '#00C7BE', '#FF6B35',
-];
+import { AVATAR_COLORS } from "@/constants/data";
 
 export function getInitials(name: string): string {
     return name

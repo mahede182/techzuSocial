@@ -15,8 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/colors';
-
-const MAX_CHARS = 500;
+import { MAX_CHARS } from '@/constants/data';
 
 export default function CreatePostScreen() {
     const router = useRouter();
@@ -54,7 +53,6 @@ export default function CreatePostScreen() {
                 style={styles.flex}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             >
-                {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity onPress={() => router.back()} style={styles.cancelBtn} activeOpacity={0.7}>
                         <Text style={styles.cancelText}>Cancel</Text>
@@ -79,7 +77,6 @@ export default function CreatePostScreen() {
                     keyboardShouldPersistTaps="handled"
                     showsVerticalScrollIndicator={false}
                 >
-                    {/* Text input area */}
                     <View style={styles.inputCard}>
                         <TextInput
                             style={styles.textInput}
@@ -92,13 +89,10 @@ export default function CreatePostScreen() {
                             autoFocus
                             textAlignVertical="top"
                         />
-                        {/* Char counter */}
                         <Text style={[styles.charCounter, remaining < 50 && styles.charCounterWarn]}>
                             {remaining}
                         </Text>
                     </View>
-
-                    {/* Tip */}
                     <View style={styles.tipRow}>
                         <Ionicons name="information-circle-outline" size={16} color={Colors.textSecondary} />
                         <Text style={styles.tipText}>Posts are public and visible to everyone.</Text>
