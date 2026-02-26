@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
 
-const postSchema = new mongoose.Schema({
+const commentSchema = new mongoose.Schema({
+    postId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+        required: true
+    },
     userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
@@ -10,17 +15,7 @@ const postSchema = new mongoose.Schema({
         type: String,
         required: true,
         trim: true,
-        maxlength: 500
-    },
-    likes: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'User'
-        }
-    ],
-    commentCount: {
-        type: Number,
-        default: 0
+        maxlength: 300
     },
     createdAt: {
         type: Date,
@@ -28,4 +23,4 @@ const postSchema = new mongoose.Schema({
     }
 })
 
-module.exports = mongoose.model('Post', postSchema)
+module.exports = mongoose.model('Comment', commentSchema)
