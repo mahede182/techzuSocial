@@ -13,37 +13,36 @@ import PostCard from '@/components/PostCard';
 import { Colors } from '@/constants/colors';
 import { CURRENT_USER_ID } from '@/constants/data';
 import { useAppStore } from '@/store/store';
+import { AppLogger } from '@/helper/applogger';
+
+const logger = new AppLogger("FeedScreen");
 
 export default function FeedScreen() {
     const {
         posts,
         postsLoading,
-        postsError,
         fetchPosts,
         toggleLike,
-    } = useAppStore((state) => ({
-        posts: state.posts,
-        postsLoading: state.postsLoading,
-        postsError: state.postsError,
-        fetchPosts: state.fetchPosts,
-        toggleLike: state.toggleLike,
-    }));
+        token
+    } = useAppStore((state) => state);
 
     useEffect(() => {
         fetchPosts();
-    }, [fetchPosts]);
+    }, []);
 
     const onRefresh = useCallback(() => {
         fetchPosts();
-    }, [fetchPosts]);
+    }, []); 
 
     const handleLike = useCallback((postId: string) => {
         toggleLike(postId);
-    }, [toggleLike]);
+    }, []); 
 
     const handleComment = useCallback((_postId: string) => {
-        // wire up comment screen later
+        
     }, []);
+
+    logger.log(token,"token from store")
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>

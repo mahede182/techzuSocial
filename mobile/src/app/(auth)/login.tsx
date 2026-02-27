@@ -18,9 +18,7 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         if (!email || !password) return;
-
         await login({ email, password });
-
         const { token, authError: latestError } = useAppStore.getState();
         if (token && !latestError) {
             router.replace('/(tabs)');
@@ -29,8 +27,8 @@ export default function LoginScreen() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Form 
-                title="Welcome back" 
+            <Form
+                title="Welcome back"
                 subtitle="Sign in to continue"
             >
                 <Input
@@ -57,7 +55,7 @@ export default function LoginScreen() {
                     loading={authLoading}
                     disabled={!email || !password || authLoading}
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.linkButton}
                     onPress={() => router.push('/(auth)/register')}
                 >

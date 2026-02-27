@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/colors';
 import { ProfileInfoProps } from '@/@types/post';
 
-export default function ProfileInfo({ name, email, onEditProfile }: ProfileInfoProps) {
+export default function ProfileInfo({ name, email, onLogout }: ProfileInfoProps) {
     return (
         <View>
             <Text style={styles.name}>{name}</Text>
@@ -12,9 +12,9 @@ export default function ProfileInfo({ name, email, onEditProfile }: ProfileInfoP
             <TouchableOpacity 
                 style={styles.editBtn} 
                 activeOpacity={0.8}
-                onPress={onEditProfile}
+                onPress={onLogout}
             >
-                <Text style={styles.editBtnText}>Edit Profile</Text>
+                <Text style={styles.editBtnText}>logout</Text>
             </TouchableOpacity>
         </View>
     );
