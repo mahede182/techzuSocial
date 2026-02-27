@@ -28,11 +28,25 @@ const getPosts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const skip = (page - 1) * limit
 
-        const posts = await Post.find().populate('userId', 'username').sort({ createdAt: -1 }).skip(skip).limit(limit);
+        const posts = await Post.find().populate('userId', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit);
         res.status(200).json(posts);
     } catch (error) {
         res.status(500).json({ error: "Failed to get Posts" })
     }
 }
 
-module.exports = { createPost, getPosts };
+const getMyPosts = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const userId = req.user.id;
+
+        const posts = await Post.find({ userId }).populate('userId', 'name').sort({ createdAt: -1 }).skip(skip).limit(limit);
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to get user posts" });
+    }
+}
+
+module.exports = { createPost, getPosts, getMyPosts };

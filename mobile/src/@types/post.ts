@@ -45,7 +45,7 @@ export interface ProfileHeaderProps {
     postsCount: number;
     likesCount: number;
     commentsCount: number;
-    onEditProfile?: () => void;
+    onLogout?: () => void;
 }
 
 export interface PostCardProps {
