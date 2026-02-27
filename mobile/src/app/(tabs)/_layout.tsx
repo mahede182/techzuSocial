@@ -2,21 +2,25 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '@/constants/colors';
+
+const _WIDTH = 60;
+const _HEIGHT = 60;
+const _RADIUS = 20;
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#8E8E93',
+        tabBarActiveTintColor: Colors.primary,
+        tabBarInactiveTintColor: Colors.textSecondary,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 30,
-          left: 20,
-          right: 20,
-          height: 70,
-          borderRadius: 35,
+          bottom: 80,
+          height: 80,
+          marginHorizontal: '10%',
+          borderRadius: 30,
           backgroundColor: '#fff',
           shadowColor: '#000',
           shadowOffset: { width: 0, height: 5 },
@@ -25,52 +29,52 @@ export default function TabsLayout() {
           elevation: 5,
         },
         tabBarItemStyle: {
-          padding: 8,
+          padding: 10,
         },
       }}>
-      <Tabs.Screen 
-        name="index" 
+      <Tabs.Screen
+        name="index"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons 
-              name={focused ? 'home' : 'home-outline'} 
-              size={24} 
-              color={color} 
+            <Ionicons
+              name={focused ? 'home' : 'home-outline'}
+              size={32}
+              color={color}
             />
           ),
         }}
       />
-      <Tabs.Screen 
-        name="create" 
+      <Tabs.Screen
+        name="create"
         options={{
           tabBarIcon: ({ color }) => (
             <View style={{
-              width: 60,
-              height: 60,
-              borderRadius: 20,
-              backgroundColor: '#007AFF',
+              width: _WIDTH,
+              height: _HEIGHT,
+              borderRadius: _RADIUS,
+              backgroundColor: Colors.primary,
               justifyContent: 'center',
               alignItems: 'center',
-              shadowColor: '#007AFF',
+              shadowColor: Colors.primary,
               shadowOffset: { width: 0, height: 8 },
               shadowOpacity: 0.4,
               shadowRadius: 10,
               elevation: 8,
             }}>
-              <Ionicons name="add" size={32} color="#fff" />
+              <Ionicons name="add" size={48} color="#fff" />
             </View>
           ),
           tabBarLabel: () => null,
         }}
       />
-      <Tabs.Screen 
-        name="profile" 
+      <Tabs.Screen
+        name="profile"
         options={{
           tabBarIcon: ({ color, focused }) => (
-            <Ionicons 
-              name={focused ? 'person' : 'person-outline'} 
-              size={24} 
-              color={color} 
+            <Ionicons
+              name={focused ? 'person' : 'person-outline'}
+              size={32}
+              color={color}
             />
           ),
         }}

@@ -32,7 +32,7 @@ const addComment = async (req, res) => {
 const getComments = async (req, res) => {
     try {
         const postId = req.params.postId;
-        const comments = await Comment.find({ postId }).populate('userId', 'username').sort({ createdAt: -1 });
+        const comments = await Comment.find({ postId }).populate('userId', 'name').sort({ createdAt: -1 });
         res.status(200).json(comments);
     } catch (error) {
         res.status(500).json({ error: "Failed to get comments", details: error.message })
