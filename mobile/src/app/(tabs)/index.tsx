@@ -21,7 +21,6 @@ export default function FeedScreen() {
         postsLoading,
         fetchPosts,
         toggleLike,
-        token,
         user,
     } = useAppStore((state) => state);
     const [commentPostId, setCommentPostId] = useState<string | null>(null);
@@ -42,7 +41,6 @@ export default function FeedScreen() {
         setCommentPostId(postId);
     }, []);
 
-    logger.log(token, "token from store")
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
