@@ -158,4 +158,4 @@ android/app/.cxx/
 *.tmp
 *.bak
 # Firebase service account — never commit
-# backend/src/config/serviceAccountKey.json
+backend/src/config/serviceAccountKey.json
