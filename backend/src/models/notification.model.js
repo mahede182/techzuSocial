@@ -7,6 +7,20 @@ const notificationSchema = new mongoose.Schema({
     type: { type: String, enum: ['like', 'comment'], required: true },
     isRead: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
+
+    status: {
+        type: String,
+        enum: ['pending', 'processing', 'sent', 'failed'],
+        default: 'pending',
+        index: true,
+    },
+    failReason: { type: String, default: null },
+
+    pushPayload: {
+        title: String,
+        body: String,
+        data: { type: Map, of: String },
+    },
 });
 
 module.exports = mongoose.model('Notification', notificationSchema);

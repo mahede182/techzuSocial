@@ -1,14 +1,20 @@
 const { messaging } = require('../config/firebase');
+const User = require('../models/user.model');
 
-const STALE_TOKEN_CODES = [
+const STALE_CODES = new Set([
     'messaging/registration-token-not-registered',
     'messaging/invalid-registration-token',
-];
+    'messaging/mismatched-credential',
+]);
 
-const sendPushNotification = async (tokens, title, body, data = {}) => {
-    const validTokens = (tokens || []).filter(Boolean);
-    if (validTokens.length === 0) {
-        return { failedTokens: [] };
+
+const sendPushNotification = async (userId, title, body, data = {}) => {
+    const user = await User.findById(userId).select('fcmTokens');
+    const tokens = (user?.fcmTokens ?? []).filter(Boolean);
+
+    if (!tokens.length) {
+        console.log(`[FCM] user ${userId} has no tokens — skipping`);
+        return { sent: 0, failedTokens: [] };
     }
 
     const stringData = Object.fromEntries(
@@ -17,31 +23,44 @@ const sendPushNotification = async (tokens, title, body, data = {}) => {
 
     try {
         const response = await messaging.sendEachForMulticast({
-            tokens: validTokens,
+            tokens,
             notification: { title, body },
             data: stringData,
+            android: {
+                priority: 'high',
+                notification: { channelId: 'default', sound: 'default' },
+            },
+            apns: {
+                payload: { aps: { sound: 'default', badge: 1 } },
+            },
         });
 
         const failedTokens = [];
-        response.responses.forEach((res, index) => {
+        response.responses.forEach((res, idx) => {
             if (!res.success) {
                 const code = res.error?.code;
-                if (STALE_TOKEN_CODES.includes(code)) {
-                    failedTokens.push(validTokens[index]);
+                if (STALE_CODES.has(code)) {
+                    failedTokens.push(tokens[idx]);
                 } else {
-                    console.error(`[FCM] Token[${index}] non-stale error:`, code);
+                    console.warn(`[FCM] transient error for token[${idx}]: ${code}`);
                 }
             }
         });
 
         if (failedTokens.length > 0) {
-            console.log(`[FCM] Removing ${failedTokens.length} stale token(s) from DB`);
+            console.log(`[FCM] removing ${failedTokens.length} stale token(s) for user ${userId}`);
+            await User.findByIdAndUpdate(userId, {
+                $pullAll: { fcmTokens: failedTokens },
+            });
         }
 
-        return { failedTokens };
+        const sent = response.responses.filter((r) => r.success).length;
+        console.log(`[FCM] userId=${userId} sent=${sent} stale=${failedTokens.length}`);
+        return { sent, failedTokens };
+
     } catch (error) {
         console.error('[FCM] sendEachForMulticast error:', error.message);
-        return { failedTokens: [] };
+        return { sent: 0, failedTokens: [] };
     }
 };
 
