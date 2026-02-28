@@ -71,6 +71,11 @@ const saveToken = async (req, res) => {
         const { fcmToken } = req.body;
         if (!fcmToken) return res.status(400).json({ error: "fcmToken is required" });
 
+        await User.updateMany(
+            { _id: { $ne: req.user.id }, fcmTokens: fcmToken },
+            { $pull: { fcmTokens: fcmToken } }
+        );
+
         await User.findByIdAndUpdate(req.user.id, {
             $addToSet: { fcmTokens: fcmToken },
         });
