@@ -30,6 +30,10 @@ A lightweight social media application where users — built with a Node.js/Expr
 
 
 
+https://github.com/user-attachments/assets/a7d76cea-9c89-4909-abe1-51ed522b6906
+
+
+
 ---
 
 ## Project Structure
