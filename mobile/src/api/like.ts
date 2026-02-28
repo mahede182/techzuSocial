@@ -1,6 +1,5 @@
 import { request } from './client';
-
-export type ToggleLikeResult = { message: 'like' | 'unlike' } | { message: string };
+import type { ToggleLikeResult } from '@/@types/api';
 
 export function toggleLike(postId: string) {
   return request<ToggleLikeResult>(

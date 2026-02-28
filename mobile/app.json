@@ -24,7 +24,8 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.mahede.mobile"
+      "package": "com.mahede.mobile",
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",

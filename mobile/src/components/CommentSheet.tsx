@@ -12,10 +12,10 @@ import BottomSheet, {
     BottomSheetBackdrop,
 } from '@gorhom/bottom-sheet';
 import { Ionicons } from '@expo/vector-icons';
-import Avatar from './Avatar';
+import CommentItem from './CommentItem';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/store/store';
-import { timeAgo } from '@/utils/date';
+import type { Comment } from '@/@types/post';
 
 interface CommentSheetProps {
     postId: string | null;
@@ -32,6 +32,11 @@ export default function CommentSheet({ postId, onClose }: CommentSheetProps) {
 
     const comments = postId ? (commentsByPostId[postId] ?? []) : [];
     const loading = postId ? (commentsLoadingByPostId[postId] ?? false) : false;
+
+    const renderItem = useCallback(
+        ({ item }: { item: Comment }) => <CommentItem item={item} />,
+        [],
+    );
 
     useEffect(() => {
         if (postId) {
@@ -110,25 +115,10 @@ export default function CommentSheet({ postId, onClose }: CommentSheetProps) {
                     data={comments}
                     keyExtractor={(item) => item._id}
                     contentContainerStyle={styles.list}
+                    renderItem={renderItem}
                     ListEmptyComponent={
                         <Text style={styles.emptyText}>No comments yet. Be the first!</Text>
                     }
-                    renderItem={({ item }) => (
-                        <View style={styles.commentRow}>
-                            <Avatar name={item.userId?.name ?? 'Unknown'} size={32} />
-                            <View style={styles.commentBody}>
-                                <View style={styles.commentMeta}>
-                                    <Text style={styles.commentAuthor}>
-                                        {item.userId?.name ?? 'Unknown'}
-                                    </Text>
-                                    <Text style={styles.commentTime}>
-                                        {timeAgo(item.createdAt)}
-                                    </Text>
-                                </View>
-                                <Text style={styles.commentText}>{item.text}</Text>
-                            </View>
-                        </View>
-                    )}
                 />
             )}
         </BottomSheet>
@@ -172,34 +162,6 @@ const styles = StyleSheet.create({
         color: Colors.textSecondary,
         fontSize: 14,
         marginTop: 24,
-    },
-    commentRow: {
-        flexDirection: 'row',
-        gap: 10,
-        marginBottom: 14,
-    },
-    commentBody: {
-        flex: 1,
-    },
-    commentMeta: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        marginBottom: 2,
-    },
-    commentAuthor: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: Colors.text,
-    },
-    commentTime: {
-        fontSize: 11,
-        color: Colors.textSecondary,
-    },
-    commentText: {
-        fontSize: 14,
-        color: Colors.text,
-        lineHeight: 20,
     },
     inputRow: {
         flexDirection: 'row',

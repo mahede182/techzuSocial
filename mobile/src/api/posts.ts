@@ -1,14 +1,6 @@
 import { request } from './client';
 import type { Post } from '@/@types/post';
-
-export interface CreatePostPayload {
-  text: string;
-}
-
-export interface GetPostsParams {
-  page?: number;
-  limit?: number;
-}
+import type { CreatePostPayload, GetPostsParams } from '@/@types/api';
 
 function toQuery(params: Record<string, string | number | undefined>) {
   const parts: string[] = [];

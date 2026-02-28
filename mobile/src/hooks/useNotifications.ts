@@ -1,14 +1,20 @@
 import { useCallback } from 'react';
-import messaging, { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
+import {
+    getMessaging,
+    onMessage,
+    onNotificationOpenedApp,
+    getInitialNotification,
+    setBackgroundMessageHandler,
+} from '@react-native-firebase/messaging';
+import type { FirebaseMessagingTypes } from '@react-native-firebase/messaging';
 import Toast from 'react-native-toast-message';
 import { requestNotificationPermission, getFcmToken } from '@/utils/notifications';
 import { saveFcmToken, removeFcmToken } from '@/api/auth';
+import type { NotificationData } from '@/@types/notifications';
+import { AppLogger } from '@/helper/applogger';
+export type { NotificationData };
 
-export type NotificationData = {
-    type?: string;
-    postId?: string;
-    [key: string]: string | undefined;
-};
+const logger = new AppLogger('useNotifications');
 
 export const useNotifications = () => {
     const registerToken = useCallback(async (): Promise<string | null> => {
@@ -21,7 +27,7 @@ export const useNotifications = () => {
         try {
             await saveFcmToken(token);
         } catch (error) {
-            console.error('[useNotifications] saveFcmToken error:', error);
+            logger.error('saveFcmToken error:', error);
         }
 
         return token;
@@ -33,15 +39,18 @@ export const useNotifications = () => {
         try {
             await removeFcmToken(token);
         } catch (error) {
-            console.error('[useNotifications] removeFcmToken error:', error);
+            logger.error('removeFcmToken error:', error);
         }
     }, []);
 
     const setupHandlers = useCallback(
         (onTap: (data: NotificationData) => void): (() => void) => {
-            messaging().setBackgroundMessageHandler(async (_remoteMessage) => { });
+            const m = getMessaging();
 
-            const unsubscribeForeground = messaging().onMessage(
+            setBackgroundMessageHandler(m, async (_remoteMessage) => { });
+
+            const unsubscribeForeground = onMessage(
+                m,
                 async (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
                     Toast.show({
                         type: 'info',
@@ -52,7 +61,8 @@ export const useNotifications = () => {
                 }
             );
 
-            const unsubscribeBackground = messaging().onNotificationOpenedApp(
+            const unsubscribeBackground = onNotificationOpenedApp(
+                m,
                 (remoteMessage: FirebaseMessagingTypes.RemoteMessage) => {
                     if (remoteMessage.data) {
                         onTap(remoteMessage.data as NotificationData);
@@ -70,7 +80,7 @@ export const useNotifications = () => {
 
     const checkInitialNotification = useCallback(
         async (onTap: (data: NotificationData) => void) => {
-            const remoteMessage = await messaging().getInitialNotification();
+            const remoteMessage = await getInitialNotification(getMessaging());
             if (remoteMessage?.data) {
                 onTap(remoteMessage.data as NotificationData);
             }

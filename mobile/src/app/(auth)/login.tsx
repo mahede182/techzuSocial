@@ -8,23 +8,31 @@ import Button from '@/components/Button';
 import ErrorMessage from '@/components/ErrorMessage';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/store/store';
+import { validateLoginForm } from '@/utils/validation';
 
 export default function LoginScreen() {
     const router = useRouter();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [validationError, setValidationError] = useState<string | null>(null);
     const login = useAppStore((state) => state.login);
     const authLoading = useAppStore((state) => state.authLoading);
     const authError = useAppStore((state) => state.authError);
 
+    const clearValidation = () => setValidationError(null);
+
     const handleLogin = async () => {
-        if (!email || !password) return;
+        const error = validateLoginForm(email, password);
+        if (error) { setValidationError(error); return; }
+        setValidationError(null);
         await login({ email, password });
         const { token, authError: latestError } = useAppStore.getState();
         if (token && !latestError) {
             router.replace('/(tabs)');
         }
     };
+
+    const displayError = validationError ?? authError;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -35,7 +43,7 @@ export default function LoginScreen() {
                 <Input
                     label="Email"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(t) => { clearValidation(); setEmail(t); }}
                     placeholder="Enter your email"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -43,12 +51,12 @@ export default function LoginScreen() {
                 <Input
                     label="Password"
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(t) => { clearValidation(); setPassword(t); }}
                     placeholder="Enter your password"
                     secureTextEntry
                 />
-                {authError ? (
-                    <ErrorMessage message={authError} />
+                {displayError ? (
+                    <ErrorMessage message={displayError} />
                 ) : null}
                 <Button
                     title="Log in"

@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RequestOptions } from "../@types/api.type";
 import { HttpMethod, URL } from "../constants/api";
 import { AppLogger } from "@/helper/applogger";
+import { RequestOptions } from "@/@types/api";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? URL;
 

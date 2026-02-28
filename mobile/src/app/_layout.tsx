@@ -9,6 +9,9 @@ import AppActivityIndicator from '@/components/AppActivityIndicator';
 import { registerPushToken } from '@/utils/push';
 import { subscribeToTokenRefresh } from '@/utils/notifications';
 import { saveFcmToken, removeFcmToken } from '@/api/auth';
+import { AppLogger } from '@/helper/applogger';
+
+const logger = new AppLogger('RootLayout');
 
 export default function RootLayout() {
     const router = useRouter();
@@ -43,9 +46,9 @@ export default function RootLayout() {
                 if (oldToken) await removeFcmToken(oldToken);
                 await saveFcmToken(newToken);
                 setFcmToken(newToken);
-                console.log('[FCM] Token refreshed and synced to backend');
+                logger.log('[FCM] Token refreshed and synced to backend');
             } catch (err) {
-                console.error('[FCM] Token refresh sync failed:', err);
+                logger.error('[FCM] Token refresh sync failed:', err);
             }
         });
         return unsubscribe;

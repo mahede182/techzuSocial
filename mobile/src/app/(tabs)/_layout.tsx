@@ -17,7 +17,7 @@ export default function TabsLayout() {
         tabBarInactiveTintColor: Colors.textSecondary,
         tabBarStyle: {
           position: 'absolute',
-          bottom: 80,
+          bottom: 60,
           height: 80,
           marginHorizontal: '10%',
           borderRadius: 30,
@@ -38,7 +38,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'home' : 'home-outline'}
-              size={32}
+              size={36}
               color={color}
             />
           ),
@@ -47,12 +47,12 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="create"
         options={{
-          tabBarIcon: ({ color }) => (
+          tabBarIcon: ({ color, focused }) => (
             <View style={{
               width: _WIDTH,
               height: _HEIGHT,
               borderRadius: _RADIUS,
-              backgroundColor: Colors.primary,
+              backgroundColor: focused ? Colors.primary : Colors.background,
               justifyContent: 'center',
               alignItems: 'center',
               shadowColor: Colors.primary,
@@ -61,7 +61,7 @@ export default function TabsLayout() {
               shadowRadius: 10,
               elevation: 8,
             }}>
-              <Ionicons name="add" size={48} color="#fff" />
+              <Ionicons name="add" size={48} color={focused ? Colors.background : Colors.primary} />
             </View>
           ),
           tabBarLabel: () => null,
@@ -73,7 +73,7 @@ export default function TabsLayout() {
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'person' : 'person-outline'}
-              size={32}
+              size={36}
               color={color}
             />
           ),

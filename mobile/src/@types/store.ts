@@ -1,11 +1,8 @@
-import type {
-  LoginPayload,
-  RegisterPayload,
-  LoginResponse,
-} from '@/api/auth';
+
 import type { Post, Comment } from '@/@types/post';
-import type { GetPostsParams } from '@/api/posts';
+import type { GetPostsParams } from '@/@types/api';
 import type { User } from '@/@types/auth';
+import { LoginPayload, RegisterPayload } from './api';
 
 export interface AuthState {
   token: string | null;
@@ -32,6 +29,9 @@ export interface PostsState {
   posts: Post[];
   myPosts: Post[];
   postsLoading: boolean;
+  postsLoadingMore: boolean;
+  postsHasMore: boolean;
+  postsPage: number;
   postsError: string | null;
   commentsByPostId: Record<string, Comment[]>;
   commentsLoadingByPostId: Record<string, boolean>;
@@ -39,7 +39,8 @@ export interface PostsState {
 }
 
 export interface PostsActions {
-  fetchPosts: (params?: GetPostsParams) => Promise<void>;
+  fetchPosts: () => Promise<void>;
+  loadMorePosts: () => Promise<void>;
   fetchMyPosts: (params?: GetPostsParams) => Promise<void>;
   createPost: (text: string) => Promise<void>;
   toggleLike: (postId: string) => Promise<void>;

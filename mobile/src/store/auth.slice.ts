@@ -1,5 +1,5 @@
 import { login as loginApi, register as registerApi, getMe, removeFcmToken } from "@/api/auth";
-import type { LoginResponse, RegisterResponse } from "@/api/auth";
+import type { LoginResponse, RegisterResponse } from "@/@types/api";
 import { storeToken, clearToken, getToken } from "@/api/client";
 import { AppLogger } from "@/helper/applogger";
 import { registerPushToken } from "@/utils/push";
@@ -23,9 +23,6 @@ export const createAuthSlice = (set: StoreSet, get: StoreGet): AuthSlice => ({
         set((state: any) => { state.isPersist = true; });
         return;
       }
-      // Only validate the token — do NOT call registerPushToken here.
-      // FCM registration blocks on a permission dialog and must never
-      // gate the isPersist flag. It runs separately in _layout.tsx.
       const user = await getMe();
       set((state: any) => {
         state.token = storedToken;

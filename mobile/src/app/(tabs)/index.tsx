@@ -3,6 +3,8 @@ import {
     FlatList,
     StyleSheet,
     RefreshControl,
+    ActivityIndicator,
+    View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import PostCard from '@/components/PostCard';
@@ -11,37 +13,37 @@ import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/store/store';
 import EmptyPosts from '@/components/EmptyPosts';
 import Header from '@/components/Header';
-import { AppLogger } from '@/helper/applogger';
-
-const logger = new AppLogger("FeedScreen");
+import { useDebounce } from '@/hooks/useDebounce';
 
 export default function FeedScreen() {
     const {
         posts,
         postsLoading,
+        postsLoadingMore,
+        postsHasMore,
         fetchPosts,
+        loadMorePosts,
         toggleLike,
-        fcmToken,
         user,
     } = useAppStore((state) => state);
     const [commentPostId, setCommentPostId] = useState<string | null>(null);
-    logger.log(fcmToken, "teokn in feed screen");
+
     useEffect(() => {
         fetchPosts();
     }, []);
 
-    const onRefresh = useCallback(() => {
-        fetchPosts();
-    }, []);
-
-    const handleLike = useCallback((postId: string) => {
-        toggleLike(postId);
-    }, []);
+    const handleLike = useDebounce(
+        useCallback((postId: string) => { toggleLike(postId); }, [toggleLike]),
+        400,
+    );
 
     const handleComment = useCallback((postId: string) => {
         setCommentPostId(postId);
     }, []);
 
+    const handleEndReached = useCallback(() => {
+        if (postsHasMore && !postsLoadingMore) loadMorePosts();
+    }, [postsHasMore, postsLoadingMore, loadMorePosts]);
 
     return (
         <SafeAreaView style={styles.container} edges={['top']}>
@@ -63,11 +65,20 @@ export default function FeedScreen() {
                 refreshControl={
                     <RefreshControl
                         refreshing={postsLoading}
-                        onRefresh={onRefresh}
+                        onRefresh={fetchPosts}
                         tintColor={Colors.primary}
                     />
                 }
-                ListEmptyComponent={<EmptyPosts />}
+                onEndReached={handleEndReached}
+                onEndReachedThreshold={0.4}
+                ListEmptyComponent={postsLoading ? null : <EmptyPosts />}
+                ListFooterComponent={
+                    postsLoadingMore ? (
+                        <View style={styles.footer}>
+                            <ActivityIndicator color={Colors.primary} />
+                        </View>
+                    ) : null
+                }
             />
 
             <CommentSheet
@@ -86,5 +97,9 @@ const styles = StyleSheet.create({
     list: {
         paddingTop: 12,
         paddingBottom: 120,
-    }
+    },
+    footer: {
+        paddingVertical: 16,
+        alignItems: 'center',
+    },
 });

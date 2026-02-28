@@ -8,29 +8,32 @@ import Button from '@/components/Button';
 import ErrorMessage from '@/components/ErrorMessage';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/store/store';
-import { AppLogger } from '@/helper/applogger';
-
-const logger = new AppLogger("RegisterScreen");
+import { validateRegisterForm } from '@/utils/validation';
 
 export default function RegisterScreen() {
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [validationError, setValidationError] = useState<string | null>(null);
     const register = useAppStore((state) => state.register);
     const authLoading = useAppStore((state) => state.authLoading);
     const authError = useAppStore((state) => state.authError);
 
-    const handleRegister = async () => {
-        if (!username || !email || !password) return;
+    const clearValidation = () => setValidationError(null);
 
+    const handleRegister = async () => {
+        const error = validateRegisterForm(username, email, password);
+        if (error) { setValidationError(error); return; }
+        setValidationError(null);
         await register({ email, password, name: username });
         const { token, authError: latestError } = useAppStore.getState();
-        logger.log(token, "token after registration")
         if (token && !latestError) {
             router.replace('/(tabs)');
         }
     };
+
+    const displayError = validationError ?? authError;
 
     return (
         <SafeAreaView style={styles.container}>
@@ -41,14 +44,14 @@ export default function RegisterScreen() {
                 <Input
                     label="Username"
                     value={username}
-                    onChangeText={setUsername}
+                    onChangeText={(t) => { clearValidation(); setUsername(t); }}
                     placeholder="Enter your username"
                     autoCapitalize="words"
                 />
                 <Input
                     label="Email"
                     value={email}
-                    onChangeText={setEmail}
+                    onChangeText={(t) => { clearValidation(); setEmail(t); }}
                     placeholder="Enter your email"
                     keyboardType="email-address"
                     autoCapitalize="none"
@@ -56,12 +59,12 @@ export default function RegisterScreen() {
                 <Input
                     label="Password"
                     value={password}
-                    onChangeText={setPassword}
+                    onChangeText={(t) => { clearValidation(); setPassword(t); }}
                     placeholder="Enter your password"
                     secureTextEntry
                 />
-                {authError ? (
-                    <ErrorMessage message={authError} />
+                {displayError ? (
+                    <ErrorMessage message={displayError} />
                 ) : null}
                 <Button
                     title="Sign up"
