@@ -13,7 +13,7 @@ export default function ProfileHeader({
     postsCount,
     likesCount,
     commentsCount,
-    onEditProfile
+    onLogout
 }: ProfileHeaderProps) {
     return (
         <View style={styles.profileHeader}>
@@ -29,7 +29,7 @@ export default function ProfileHeader({
             <ProfileInfo 
                 name={userName}
                 email={userEmail}
-                onEditProfile={onEditProfile}
+                onLogout={onLogout}
             />
 
             <SectionTitle title="My Posts" icon="grid-outline" />

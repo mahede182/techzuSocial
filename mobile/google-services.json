@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432512723183",
+    "project_id": "techzu-a51b3",
+    "storage_bucket": "techzu-a51b3.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432512723183:android:08ca6863a769d47232531a",
+        "android_client_info": {
+          "package_name": "com.mahede.mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCswMNeSEXp-IwsVJJ1P1tFp7bHdktW4Xs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

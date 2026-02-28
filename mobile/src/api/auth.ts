@@ -1,4 +1,5 @@
 import { request } from './client';
+import type { User } from '@/@types/auth';
 
 export interface LoginPayload {
   email: string;
@@ -18,6 +19,7 @@ export interface LoginResponse {
 
 export interface RegisterResponse {
   message: string;
+  token: string;
 }
 
 export function login(body: LoginPayload) {
@@ -32,4 +34,8 @@ export function register(body: RegisterPayload) {
     method: 'POST',
     body,
   });
+}
+
+export function getMe() {
+  return request<User>('/api/auth/me', { method: 'GET' });
 }

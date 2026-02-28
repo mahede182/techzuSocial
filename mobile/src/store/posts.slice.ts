@@ -1,4 +1,4 @@
-import { createPost as createPostApi, getPosts as getPostsApi } from "@/api/posts";
+import { createPost as createPostApi, getPosts as getPostsApi, getMyPosts as getMyPostsApi } from "@/api/posts";
 import { toggleLike as toggleLikeApi } from "@/api/like";
 import {
   addComment as addCommentApi,
@@ -14,6 +14,7 @@ const logger = new AppLogger("PostsSlice");
 
 export const createPostsSlice = (set: StoreSet, get: StoreGet): PostsSlice => ({
   posts: [],
+  myPosts: [],
   postsLoading: false,
   postsError: null,
   commentsByPostId: {},
@@ -45,17 +46,38 @@ export const createPostsSlice = (set: StoreSet, get: StoreGet): PostsSlice => ({
       const newPost = await createPostApi({ text });
       set((state: any) => {
         state.posts = [newPost, ...state.posts];
+        state.myPosts = [newPost, ...state.myPosts];
       });
     } catch {
-        logger.error("Failed to create post");
+      logger.error("Failed to create post");
+    }
+  },
+
+  async fetchMyPosts(params) {
+    set((state: any) => {
+      state.postsLoading = true;
+      state.postsError = null;
+    });
+    try {
+      const myPosts = await getMyPostsApi(params ?? {});
+      set((state: any) => {
+        state.myPosts = myPosts;
+        state.postsLoading = false;
+      });
+    } catch (err) {
+      set((state: any) => {
+        state.postsLoading = false;
+        state.postsError =
+          err instanceof Error ? err.message : "Failed to load your posts";
+      });
     }
   },
 
   async toggleLike(postId) {
     try {
       await toggleLikeApi(postId);
-      const { fetchPosts } = get();
-      await fetchPosts();
+      const { fetchPosts, fetchMyPosts } = get();
+      await Promise.all([fetchPosts(), fetchMyPosts()]);
     } catch {
       logger.error("Failed to toggle like");
     }
@@ -68,8 +90,8 @@ export const createPostsSlice = (set: StoreSet, get: StoreGet): PostsSlice => ({
         const existing = state.commentsByPostId[postId] ?? [];
         state.commentsByPostId[postId] = [newComment, ...existing];
       });
-      const { fetchPosts } = get();
-      await fetchPosts();
+      const { fetchPosts, fetchMyPosts } = get();
+      await Promise.all([fetchPosts(), fetchMyPosts()]);
     } catch {
       logger.error("Failed to add comment");
     }

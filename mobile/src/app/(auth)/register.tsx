@@ -7,6 +7,9 @@ import Input from '@/components/Input';
 import Button from '@/components/Button';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/store/store';
+import { AppLogger } from '@/helper/applogger';
+
+const logger = new AppLogger("RegisterScreen");
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -21,17 +24,17 @@ export default function RegisterScreen() {
         if (!username || !email || !password) return;
 
         await register({ email, password, name: username });
-
-        const { authError: latestError } = useAppStore.getState();
-        if (!latestError) {
-            router.replace('/(auth)/login');
+        const { token, authError: latestError } = useAppStore.getState();
+        logger.log(token, "token after registration")
+        if (token && !latestError) {
+            router.replace('/(tabs)');
         }
     };
 
     return (
         <SafeAreaView style={styles.container}>
-            <Form 
-                title="Create account" 
+            <Form
+                title="Create account"
                 subtitle="Sign up to get started"
             >
                 <Input
@@ -65,7 +68,7 @@ export default function RegisterScreen() {
                     loading={authLoading}
                     disabled={!username || !email || !password || authLoading}
                 />
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.linkButton}
                     onPress={() => router.push('/(auth)/login')}
                 >

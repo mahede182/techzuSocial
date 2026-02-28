@@ -1,31 +1,32 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RequestOptions } from "../@types/api.type";
-import { URL } from "../constants/api";
+import { HttpMethod, URL } from "../constants/api";
+import { AppLogger } from "@/helper/applogger";
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? URL;
 
+const logger = new AppLogger("Api Client");
+
 export const storeToken = async (token: string) => {
-  try {
-    await AsyncStorage.setItem("access_token", token);
-  } catch (error) {
-    console.error('Error storing token:', error);
+  if (!token) {
+    logger.log("storeToken: token is undefined, skipping");
+    return;
+  }
+  if (typeof window !== 'undefined') {
+    await AsyncStorage.setItem('access_token', token);
   }
 };
 
-export const clearToken = async () => {
-  try {
-    await AsyncStorage.removeItem("access_token");
-  } catch (error) {
-    console.error('Error clearing token:', error);
+export const getToken = () => {
+  if (typeof window !== 'undefined') {
+    return AsyncStorage.getItem('access_token');
   }
+  return null;
 };
 
-export const getToken = async () => {
-  try {
-    return await AsyncStorage.getItem("access_token");
-  } catch (error) {
-    console.error('Error getting token:', error);
-    return null;
+export const clearToken = () => {
+  if (typeof window !== 'undefined') {
+    AsyncStorage.removeItem('access_token');
   }
 };
 
@@ -38,14 +39,12 @@ export async function request<T>(
   };
 
   const authToken = token || (await getToken());
+
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
   }
 
-  const base = API_BASE_URL.replace(/\/+$/, "");
-  const p = path.replace(/^\/+/, "");
-
-  const res = await fetch(`${base}/${p}`, {
+  const res = await fetch(`${API_BASE_URL}${path}`, {
     method,
     headers,
     body: body != null ? JSON.stringify(body) : undefined,

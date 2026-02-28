@@ -28,3 +28,8 @@ export function getPosts(params: GetPostsParams = {}) {
   return request<Post[]>(`/api/posts${query}`, { method: 'GET' });
 }
 
+export function getMyPosts(params: GetPostsParams = {}) {
+  const query = toQuery({ page: params.page, limit: params.limit });
+  return request<Post[]>(`/api/posts/me${query}`, { method: 'GET' });
+}
+
