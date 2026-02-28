@@ -21,10 +21,11 @@ export default function FeedScreen() {
         postsLoading,
         fetchPosts,
         toggleLike,
+        fcmToken,
         user,
     } = useAppStore((state) => state);
     const [commentPostId, setCommentPostId] = useState<string | null>(null);
-
+    logger.log(fcmToken, "teokn in feed screen");
     useEffect(() => {
         fetchPosts();
     }, []);

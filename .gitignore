@@ -157,3 +157,5 @@ android/app/.cxx/
 # Temporary files
 *.tmp
 *.bak
+# Firebase service account — never commit
+# backend/src/config/serviceAccountKey.json

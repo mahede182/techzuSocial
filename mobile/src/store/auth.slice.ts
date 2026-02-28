@@ -1,18 +1,42 @@
-import { login as loginApi, register as registerApi, getMe } from "@/api/auth";
+import { login as loginApi, register as registerApi, getMe, removeFcmToken } from "@/api/auth";
 import type { LoginResponse, RegisterResponse } from "@/api/auth";
-import { storeToken, clearToken } from "@/api/client";
+import { storeToken, clearToken, getToken } from "@/api/client";
 import { AppLogger } from "@/helper/applogger";
-import type { AuthSlice } from "@/@types/store";
+import { registerPushToken } from "@/utils/push";
+import type { AuthSlice, StoreGet, StoreSet } from "@/@types/store";
+
 
 const logger = new AppLogger("AuthSlice");
 
-type StoreSet = (fn: (state: any) => void) => void;
-
-export const createAuthSlice = (set: StoreSet): AuthSlice => ({
+export const createAuthSlice = (set: StoreSet, get: StoreGet): AuthSlice => ({
   token: null,
   user: null,
+  fcmToken: null,
+  isPersist: false,
   authLoading: false,
   authError: null,
+
+  async restoreSession() {
+    try {
+      const storedToken = await getToken();
+      if (!storedToken) {
+        set((state: any) => { state.isPersist = true; });
+        return;
+      }
+      // Only validate the token — do NOT call registerPushToken here.
+      // FCM registration blocks on a permission dialog and must never
+      // gate the isPersist flag. It runs separately in _layout.tsx.
+      const user = await getMe();
+      set((state: any) => {
+        state.token = storedToken;
+        state.user = user;
+        state.isPersist = true;
+      });
+    } catch {
+      clearToken();
+      set((state: any) => { state.isPersist = true; });
+    }
+  },
 
   async login(payload) {
     set((state: any) => {
@@ -23,9 +47,11 @@ export const createAuthSlice = (set: StoreSet): AuthSlice => ({
       const res: LoginResponse = await loginApi(payload);
       await storeToken(res.token);
       const user = await getMe();
+      const fcmToken = await registerPushToken();
       set((state: any) => {
         state.token = res.token;
         state.user = user;
+        state.fcmToken = fcmToken;
         state.authLoading = false;
       });
     } catch (err) {
@@ -46,9 +72,11 @@ export const createAuthSlice = (set: StoreSet): AuthSlice => ({
       const res: RegisterResponse = await registerApi(payload);
       await storeToken(res.token);
       const user = await getMe();
+      const fcmToken = await registerPushToken();
       set((state: any) => {
         state.token = res.token;
         state.user = user;
+        state.fcmToken = fcmToken;
         state.authLoading = false;
       });
     } catch (err) {
@@ -71,11 +99,26 @@ export const createAuthSlice = (set: StoreSet): AuthSlice => ({
     }
   },
 
+  setFcmToken(token: string | null) {
+    set((state: any) => { state.fcmToken = token; });
+  },
+
+  clearAuthError() {
+    set((state: any) => { state.authError = null; });
+  },
+
   logout() {
+    const currentFcmToken: string | null = get().fcmToken;
+    if (currentFcmToken) {
+      removeFcmToken(currentFcmToken).catch((err: unknown) =>
+        logger.error('removeFcmToken on logout failed', err)
+      );
+    }
     clearToken();
     set((state: any) => {
       state.token = null;
       state.user = null;
+      state.fcmToken = null;
     });
   },
 });

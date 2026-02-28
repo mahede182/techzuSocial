@@ -52,7 +52,16 @@ export async function request<T>(
 
   if (!res.ok) {
     const text = await res.text().catch(() => '');
-    throw new Error(text || `Request failed with status ${res.status}`);
+    let message = `Request failed with status ${res.status}`;
+    if (text) {
+      try {
+        const json = JSON.parse(text);
+        message = json.error ?? json.message ?? text;
+      } catch {
+        message = text;
+      }
+    }
+    throw new Error(message);
   }
 
   if (res.status === 204) {

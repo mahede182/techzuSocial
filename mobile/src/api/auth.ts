@@ -39,3 +39,17 @@ export function register(body: RegisterPayload) {
 export function getMe() {
   return request<User>('/api/auth/me', { method: 'GET' });
 }
+
+export function saveFcmToken(fcmToken: string) {
+  return request<{ message: string }>('/api/auth/token', {
+    method: 'PUT',
+    body: { fcmToken },
+  });
+}
+
+export function removeFcmToken(fcmToken: string) {
+  return request<{ message: string }>('/api/auth/token', {
+    method: 'DELETE',
+    body: { fcmToken },
+  });
+}
