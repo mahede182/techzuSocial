@@ -7,7 +7,7 @@ import type { AppStore } from '@/@types/store';
 
 export const useAppStore = create<AppStore>()(
   immer((set, get) => ({
-    ...createAuthSlice(set),
+    ...createAuthSlice(set, get),
     ...createPostsSlice(set, get),
   })),
 );

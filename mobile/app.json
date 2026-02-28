@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "mobile",
-    "slug": "mobile",
+    "name": "techzuSocial",
+    "slug": "techzuSocial",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "mobile",
+    "scheme": "techzuSocial",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
@@ -33,10 +33,24 @@
     },
     "plugins": [
       "expo-router",
-      "@react-native-firebase/app"
+      "@react-native-firebase/app",
+      "@react-native-firebase/messaging",
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": false
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "366d61e4-37a3-47a0-8ba9-112203cd466e"
+      }
     }
   }
 }

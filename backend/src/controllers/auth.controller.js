@@ -64,6 +64,36 @@ const getMe = async (req, res) => {
         console.log(error);
         res.status(500).json({ error: "Failed to fetch user" });
     }
-}
+};
 
-module.exports = { login, register, getMe };
+const saveToken = async (req, res) => {
+    try {
+        const { fcmToken } = req.body;
+        if (!fcmToken) return res.status(400).json({ error: "fcmToken is required" });
+
+        await User.findByIdAndUpdate(req.user.id, {
+            $addToSet: { fcmTokens: fcmToken },
+        });
+        res.status(200).json({ message: "Token saved" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to save token" });
+    }
+};
+
+const removeToken = async (req, res) => {
+    try {
+        const { fcmToken } = req.body;
+        if (!fcmToken) return res.status(400).json({ error: "fcmToken is required" });
+
+        await User.findByIdAndUpdate(req.user.id, {
+            $pull: { fcmTokens: fcmToken },
+        });
+        res.status(200).json({ message: "Token removed" });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: "Failed to remove token" });
+    }
+};
+
+module.exports = { login, register, getMe, saveToken, removeToken };

@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import Form from '@/components/Form';
 import Input from '@/components/Input';
 import Button from '@/components/Button';
+import ErrorMessage from '@/components/ErrorMessage';
 import { Colors } from '@/constants/colors';
 import { useAppStore } from '@/store/store';
 import { AppLogger } from '@/helper/applogger';
@@ -60,7 +61,7 @@ export default function RegisterScreen() {
                     secureTextEntry
                 />
                 {authError ? (
-                    <Text style={styles.errorText}>{authError}</Text>
+                    <ErrorMessage message={authError} />
                 ) : null}
                 <Button
                     title="Sign up"
@@ -83,11 +84,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: Colors.background,
-    },
-    errorText: {
-        color: Colors.danger,
-        marginTop: 8,
-        textAlign: 'center',
     },
     linkButton: {
         marginTop: 20,
