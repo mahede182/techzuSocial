@@ -1,5 +1,5 @@
-import { login as loginApi, register as registerApi } from "@/api/auth";
-import type { LoginResponse } from "@/api/auth";
+import { login as loginApi, register as registerApi, getMe } from "@/api/auth";
+import type { LoginResponse, RegisterResponse } from "@/api/auth";
 import { storeToken, clearToken } from "@/api/client";
 import { AppLogger } from "@/helper/applogger";
 import type { AuthSlice } from "@/@types/store";
@@ -10,6 +10,7 @@ type StoreSet = (fn: (state: any) => void) => void;
 
 export const createAuthSlice = (set: StoreSet): AuthSlice => ({
   token: null,
+  user: null,
   authLoading: false,
   authError: null,
 
@@ -21,8 +22,10 @@ export const createAuthSlice = (set: StoreSet): AuthSlice => ({
     try {
       const res: LoginResponse = await loginApi(payload);
       await storeToken(res.token);
+      const user = await getMe();
       set((state: any) => {
         state.token = res.token;
+        state.user = user;
         state.authLoading = false;
       });
     } catch (err) {
@@ -40,8 +43,12 @@ export const createAuthSlice = (set: StoreSet): AuthSlice => ({
       state.authError = null;
     });
     try {
-      await registerApi(payload);
+      const res: RegisterResponse = await registerApi(payload);
+      await storeToken(res.token);
+      const user = await getMe();
       set((state: any) => {
+        state.token = res.token;
+        state.user = user;
         state.authLoading = false;
       });
     } catch (err) {
@@ -53,10 +60,22 @@ export const createAuthSlice = (set: StoreSet): AuthSlice => ({
     }
   },
 
+  async fetchProfile() {
+    try {
+      const user = await getMe();
+      set((state: any) => {
+        state.user = user;
+      });
+    } catch {
+      logger.error("Failed to fetch profile");
+    }
+  },
+
   logout() {
     clearToken();
     set((state: any) => {
       state.token = null;
+      state.user = null;
     });
   },
 });

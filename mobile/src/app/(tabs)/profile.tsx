@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -11,37 +11,28 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import PostCard from '@/components/PostCard';
 import ProfileListHeader from '@/components/ProfileListHeader';
+import CommentSheet from '@/components/CommentSheet';
 import { Colors } from '@/constants/colors';
-import { Post } from '@/@types/post';
-import { CURRENT_USER, MOCK_POSTS } from '@/constants/data';
+import { useAppStore } from '@/store/store';
 
 export default function ProfileScreen() {
-    const myPosts = MOCK_POSTS.filter(p => p.userId._id === CURRENT_USER._id);
-    const [posts, setPosts] = useState<Post[]>(myPosts);
-    const [refreshing, setRefreshing] = useState(false);
+    const { myPosts, postsLoading, fetchMyPosts, toggleLike, user } = useAppStore((state) => state);
+    const [commentPostId, setCommentPostId] = useState<string | null>(null);
 
-    const onRefresh = useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => setRefreshing(false), 600);
+    useEffect(() => {
+        fetchMyPosts();
     }, []);
 
-    const handleLike = useCallback((postId: string) => {
-        setPosts((prev) =>
-            prev.map((p) => {
-                if (p._id !== postId) return p;
-                const liked = p.likes.includes(CURRENT_USER._id);
-                return {
-                    ...p,
-                    likes: liked
-                        ? p.likes.filter((id) => id !== CURRENT_USER._id)
-                        : [...p.likes, CURRENT_USER._id],
-                };
-            })
-        );
-    }, []);
+    const onRefresh = useCallback(async () => {
+        await fetchMyPosts();
+    }, [fetchMyPosts]);
 
-    const handleComment = useCallback((_postId: string) => {
-        // wire up comment screen later
+    const handleLike = useCallback(async (postId: string) => {
+        await toggleLike(postId);
+    }, [toggleLike]);
+
+    const handleComment = useCallback((postId: string) => {
+        setCommentPostId(postId);
     }, []);
 
     return (
@@ -54,13 +45,13 @@ export default function ProfileScreen() {
             </View>
 
             <FlatList
-                data={posts}
+                data={myPosts}
                 keyExtractor={(item) => item._id}
-                ListHeaderComponent={<ProfileListHeader posts={posts} />}
+                ListHeaderComponent={<ProfileListHeader posts={myPosts} />}
                 renderItem={({ item }) => (
                     <PostCard
                         post={item}
-                        currentUserId={CURRENT_USER._id}
+                        currentUserId={user?._id ?? ''}
                         onLike={handleLike}
                         onComment={handleComment}
                     />
@@ -69,7 +60,7 @@ export default function ProfileScreen() {
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
-                        refreshing={refreshing}
+                        refreshing={postsLoading}
                         onRefresh={onRefresh}
                         tintColor={Colors.primary}
                     />
@@ -80,6 +71,11 @@ export default function ProfileScreen() {
                         <Text style={styles.emptyText}>No posts yet</Text>
                     </View>
                 }
+            />
+
+            <CommentSheet
+                postId={commentPostId}
+                onClose={() => setCommentPostId(null)}
             />
         </SafeAreaView>
     );

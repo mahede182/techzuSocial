@@ -5,11 +5,11 @@ const post = require("./routes/post.routes")
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: '*' }));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send({ 'message': 'Hello World!' })
 })
 
 app.use("/api/auth", auth)
