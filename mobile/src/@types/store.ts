@@ -10,6 +10,8 @@ import type { User } from '@/@types/auth';
 export interface AuthState {
   token: string | null;
   user: User | null;
+  fcmToken: string | null;
+  isPersist: boolean;
   authLoading: boolean;
   authError: string | null;
 }
@@ -19,6 +21,9 @@ export interface AuthActions {
   register: (payload: RegisterPayload) => Promise<void>;
   logout: () => void;
   fetchProfile: () => Promise<void>;
+  setFcmToken: (token: string | null) => void;
+  restoreSession: () => Promise<void>;
+  clearAuthError: () => void;
 }
 
 export type AuthSlice = AuthState & AuthActions;
@@ -46,3 +51,5 @@ export type PostsSlice = PostsState & PostsActions;
 
 export type AppStore = AuthSlice & PostsSlice;
 
+export type StoreSet = (fn: (state: any) => void) => void;
+export type StoreGet = () => any;

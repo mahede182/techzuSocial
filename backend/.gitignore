@@ -31,3 +31,6 @@ coverage/
 # Temp files
 tmp/
 temp/
+
+# Firebase service account — never commit
+src/config/serviceAccountKey.json
