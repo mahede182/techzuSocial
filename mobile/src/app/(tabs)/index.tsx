@@ -27,9 +27,10 @@ export default function FeedScreen() {
         user,
     } = useAppStore((state) => state);
     const [commentPostId, setCommentPostId] = useState<string | null>(null);
+    const [hasLoaded, setHasLoaded] = useState(false);
 
     useEffect(() => {
-        fetchPosts();
+        fetchPosts().finally(() => setHasLoaded(true));
     }, []);
 
     const handleLike = useDebounce(
@@ -71,7 +72,15 @@ export default function FeedScreen() {
                 }
                 onEndReached={handleEndReached}
                 onEndReachedThreshold={0.4}
-                ListEmptyComponent={postsLoading ? null : <EmptyPosts />}
+                ListEmptyComponent={
+                    !hasLoaded ? (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color={Colors.primary} />
+                        </View>
+                    ) : (
+                        <EmptyPosts />
+                    )
+                }
                 ListFooterComponent={
                     postsLoadingMore ? (
                         <View style={styles.footer}>
@@ -101,5 +110,11 @@ const styles = StyleSheet.create({
     footer: {
         paddingVertical: 16,
         alignItems: 'center',
+    },
+    loadingContainer: {
+        flex: 1,
+        paddingTop: 100,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
 });

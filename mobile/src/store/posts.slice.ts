@@ -68,9 +68,17 @@ export const createPostsSlice = (set: StoreSet, get: StoreGet): PostsSlice => ({
   async createPost(text) {
     try {
       const newPost = await createPostApi({ text });
+      const currentUser = get().user;
+      const enriched = {
+        ...newPost,
+        userId:
+          newPost.userId && typeof (newPost.userId as any).name === 'string'
+            ? newPost.userId
+            : { _id: currentUser?._id ?? '', name: currentUser?.name ?? '' },
+      };
       set((state: any) => {
-        state.posts = [newPost, ...state.posts];
-        state.myPosts = [newPost, ...state.myPosts];
+        state.posts = [enriched, ...state.posts];
+        state.myPosts = [enriched, ...state.myPosts];
       });
     } catch {
       logger.error("Failed to create post");
